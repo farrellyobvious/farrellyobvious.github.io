@@ -1,0 +1,200 @@
+import React, { useState } from 'react';
+
+const BattleCardGenerator = () => {
+  const [formData, setFormData] = useState({
+    partnerBadge: '',
+    solutionTitle: '',
+    valueProp: '',
+    componentDescription: '',
+    discoveryQuestions: ['', '', ''],
+    successStory: {
+      client: '',
+      description: '',
+      results: ['', '', '']
+    },
+    differentiators: ['', '', '']
+  });
+
+  const handleInputChange = (e, field, index = null) => {
+    const { value } = e.target;
+    
+    setFormData(prev => {
+      if (index !== null) {
+        // Handle array fields
+        const newArray = [...prev[field]];
+        newArray[index] = value;
+        return { ...prev, [field]: newArray };
+      } else if (field.includes('.')) {
+        // Handle nested objects
+        const [parent, child] = field.split('.');
+        return {
+          ...prev,
+          [parent]: { ...prev[parent], [child]: value }
+        };
+      }
+      return { ...prev, [field]: value };
+    });
+  };
+
+  const generateHTML = () => {
+    // Create the HTML string using the template
+    const htmlContent = `<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>${formData.solutionTitle} - Box Partner Solution</title>
+        <!-- CSS styles would go here -->
+      </head>
+      <body>
+        <!-- HTML content using formData -->
+      </body>
+    </html>`;
+
+    // Create and download the file
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'battlecard.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">Battle Card Generator</h1>
+      
+      <div className="space-y-6">
+        {/* Basic Information */}
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Partner Badge</label>
+            <input
+              type="text"
+              value={formData.partnerBadge}
+              onChange={(e) => handleInputChange(e, 'partnerBadge')}
+              className="w-full p-2 border rounded"
+              placeholder="Slalom + Box AI Solution"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Solution Title</label>
+            <input
+              type="text"
+              value={formData.solutionTitle}
+              onChange={(e) => handleInputChange(e, 'solutionTitle')}
+              className="w-full p-2 border rounded"
+              placeholder="AgentForce AI Accelerator"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Value Proposition</label>
+            <textarea
+              value={formData.valueProp}
+              onChange={(e) => handleInputChange(e, 'valueProp')}
+              className="w-full p-2 border rounded"
+              rows="3"
+              placeholder="Transform your Salesforce document workflows..."
+            />
+          </div>
+        </div>
+
+        {/* Component Description */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Component Description</label>
+          <textarea
+            value={formData.componentDescription}
+            onChange={(e) => handleInputChange(e, 'componentDescription')}
+            className="w-full p-2 border rounded"
+            rows="3"
+            placeholder="Leverage AI and machine learning..."
+          />
+        </div>
+
+        {/* Discovery Questions */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Discovery Questions</label>
+          {formData.discoveryQuestions.map((question, index) => (
+            <input
+              key={index}
+              type="text"
+              value={question}
+              onChange={(e) => handleInputChange(e, 'discoveryQuestions', index)}
+              className="w-full p-2 border rounded mb-2"
+              placeholder={`Discovery Question ${index + 1}`}
+            />
+          ))}
+        </div>
+
+        {/* Success Story */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Success Story</h3>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">Client</label>
+            <input
+              type="text"
+              value={formData.successStory.client}
+              onChange={(e) => handleInputChange(e, 'successStory.client')}
+              className="w-full p-2 border rounded"
+              placeholder="Global Financial Services Leader"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Description</label>
+            <textarea
+              value={formData.successStory.description}
+              onChange={(e) => handleInputChange(e, 'successStory.description')}
+              className="w-full p-2 border rounded"
+              rows="3"
+              placeholder="A Fortune 500 financial services firm..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Results</label>
+            {formData.successStory.results.map((result, index) => (
+              <input
+                key={index}
+                type="text"
+                value={result}
+                onChange={(e) => handleInputChange(e, 'successStory.results', index)}
+                className="w-full p-2 border rounded mb-2"
+                placeholder={`Result ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Key Differentiators */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Key Differentiators</label>
+          {formData.differentiators.map((diff, index) => (
+            <input
+              key={index}
+              type="text"
+              value={diff}
+              onChange={(e) => handleInputChange(e, 'differentiators', index)}
+              className="w-full p-2 border rounded mb-2"
+              placeholder={`Differentiator ${index + 1}`}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={generateHTML}
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+        >
+          Generate Battle Card
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default BattleCardGenerator;
